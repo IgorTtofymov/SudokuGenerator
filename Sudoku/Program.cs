@@ -14,13 +14,13 @@ namespace Sudoku
             for (int i = 0; i < table.Count; i++)
             {
                 List<int> innterList = table[i];
-                for (int j=0;j<innterList.Count; j++)
+                for (int j = 0; j < innterList.Count; j++)
                 {
                     Console.Write(innterList[j] + " ");
                     Console.Write((j + 1) % 3 == 0 ? "|" : " ");
                     Console.Write(" ");
                 }
-                Console.WriteLine((i+1)%3==0?"\n---------------------------------":"");
+                Console.WriteLine((i + 1) % 3 == 0 ? "\n---------------------------------" : "");
             }
         }
         public Sudoku()
@@ -37,6 +37,31 @@ namespace Sudoku
                 , new List<int> { 9, 1, 2, 3, 4, 5, 6, 7, 8 } };
         }
     }
+    public static  class Hider
+    {
+        static Random rnd = new Random();
+        
+        public static  void Hide(this Sudoku sudoku)
+        {
+            foreach (var row in sudoku.table)
+            {
+                int hidedInRow = rnd.Next(4, 8);
+                List<int> toHide = new List<int>();
+                for (int i = 0; i <= hidedInRow; i++)
+                {
+                    int rand = rnd.Next(0, 9);
+                    while (toHide.Contains(rand))
+                        rand = rnd.Next(0, 9);
+                        toHide.Add(rand);
+                }
+                foreach (var item in toHide)
+                {
+                    row[item] = 0;
+                }
+            }
+        }
+
+    }
     public class Switcher
     {
 
@@ -49,19 +74,19 @@ namespace Sudoku
         }
 
         static Random rnd = new Random((int)(DateTime.Now.Ticks));
-        
-        static int RandomGenerator(Random rnd,  out int first, out int second)
+
+        static int RandomGenerator(Random rnd, out int first, out int second)
         {
             first = rnd.Next(1, 4);
             second = rnd.Next(1, 4);
-            while(second == first)
-            second = rnd.Next(1, 4);
+            while (second == first)
+                second = rnd.Next(1, 4);
             return rnd.Next(0, 3);
         }
 
         public void Swap()
         {
-            for (int i = 0; i < numberOfSwaps; i++)
+            for (int i = 0; i <= numberOfSwaps; i++)
             {
                 int swapCase = rnd.Next(1, 5);
                 switch (swapCase)
@@ -82,7 +107,7 @@ namespace Sudoku
             }
         }
 
-        public void SwitchRowSmall(ref Sudoku sudoku)
+        void SwitchRowSmall(ref Sudoku sudoku)
         {
             int firstRowToSwap;
             int secondRowToSwap;
@@ -95,12 +120,12 @@ namespace Sudoku
             sudoku.table.RemoveAt(0);
         }
 
-        public void SwitchRowBig(ref Sudoku sudoku)
+        void SwitchRowBig(ref Sudoku sudoku)
         {
             int firstRowToSwap;
             int secondRowToSwap;
 
-            RandomGenerator(rnd,  out firstRowToSwap, out secondRowToSwap);
+            RandomGenerator(rnd, out firstRowToSwap, out secondRowToSwap);
             sudoku.table.InsertRange(0, new List<List<int>> { new List<int>(), new List<int>(), new List<int>() });
             for (int i = 0; i < 3; i++)
             {
@@ -110,25 +135,25 @@ namespace Sudoku
             }
             sudoku.table.RemoveRange(0, 3);
         }
-        public void SwitchColumnBig(ref Sudoku sudoku)
+        void SwitchColumnBig(ref Sudoku sudoku)
         {
             int firstColToSwap;
             int secondColToSwap;
-            RandomGenerator(rnd,  out firstColToSwap, out secondColToSwap);
-            foreach(var row in sudoku.table)
+            RandomGenerator(rnd, out firstColToSwap, out secondColToSwap);
+            foreach (var row in sudoku.table)
             {
                 row.InsertRange(0, new List<int> { 0, 0, 0 });
                 for (int i = 0; i < 3; i++)
                 {
                     row[i] = row[firstColToSwap * 3 + i];
-                    row[firstColToSwap*3 + i] = row[secondColToSwap*3 + i];
-                    row[secondColToSwap*3 + i] = row[i];
+                    row[firstColToSwap * 3 + i] = row[secondColToSwap * 3 + i];
+                    row[secondColToSwap * 3 + i] = row[i];
                 }
                 row.RemoveRange(0, 3);
             }
 
         }
-        public void SwitchColumnSmall(ref Sudoku sudoku)
+        void SwitchColumnSmall(ref Sudoku sudoku)
         {
             int firstRowToSwap;
             int secondRowToSwap;
@@ -137,7 +162,7 @@ namespace Sudoku
             foreach (var row in sudoku.table)
             {
                 row.Insert(0, 0);
-                row[0] = row[columnBig*3 + firstRowToSwap];
+                row[0] = row[columnBig * 3 + firstRowToSwap];
                 row[columnBig * 3 + firstRowToSwap] = row[columnBig * 3 + secondRowToSwap];
                 row[columnBig * 3 + secondRowToSwap] = row[0];
                 row.RemoveAt(0);
@@ -154,6 +179,10 @@ namespace Sudoku
             initializer.Swap();
             initializer.Sudoku.Show();
 
+            initializer.Sudoku.Hide();
+
+            Console.WriteLine("\n");
+            initializer.Sudoku.Show();
             Console.ReadLine();
         }
     }
