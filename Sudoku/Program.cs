@@ -26,15 +26,15 @@ namespace Sudoku
         public Sudoku()
         {
             table = new List<List<int>> {
-                new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9 }
+                  new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9 }
                 , new List<int> { 4, 5, 6, 7, 8, 9, 1, 2, 3 }
                 , new List<int> { 7, 8, 9, 1, 2, 3, 4, 5, 6 }
                 , new List<int> { 2, 3, 4, 5, 6, 7, 8, 9, 1 }
                 , new List<int> { 5, 6, 7, 8, 9, 1, 2, 3, 4 }
                 , new List<int> { 8, 9, 1, 2, 3, 4, 5, 6, 7 }
-            ,new List<int>{3,4,5,6,7,8,9,1,2 }
-            ,new List<int>{6,7,8,9,1,2,3,4,5 }
-            ,new List<int>{9,1,2,3,4,5,6,7,8 } };
+                , new List<int> { 3, 4, 5, 6, 7, 8, 9, 1, 2 }
+                , new List<int> { 6, 7, 8, 9, 1, 2, 3, 4, 5 }
+                , new List<int> { 9, 1, 2, 3, 4, 5, 6, 7, 8 } };
         }
     }
     public class Switcher
@@ -50,12 +50,13 @@ namespace Sudoku
 
         static Random rnd = new Random((int)(DateTime.Now.Ticks));
         
-        static void RandomGenerator(Random rnd, int range, out int first, out int second)
+        static int RandomGenerator(Random rnd,  out int first, out int second)
         {
-            first = rnd.Next(1, range + 1);
-            second = rnd.Next(1, range + 1);
+            first = rnd.Next(1, 4);
+            second = rnd.Next(1, 4);
             while(second == first)
-            second = rnd.Next(1, range + 1);
+            second = rnd.Next(1, 4);
+            return rnd.Next(0, 3);
         }
 
         public void Swap()
@@ -85,12 +86,12 @@ namespace Sudoku
         {
             int firstRowToSwap;
             int secondRowToSwap;
-            RandomGenerator(rnd, 9, out firstRowToSwap, out secondRowToSwap);
+            int rowBig = RandomGenerator(rnd, out firstRowToSwap, out secondRowToSwap);
 
             sudoku.table.Insert(0, new List<int>());
-            sudoku.table[0] = sudoku.table[firstRowToSwap];
-            sudoku.table[firstRowToSwap] = sudoku.table[secondRowToSwap];
-            sudoku.table[secondRowToSwap] = sudoku.table[0];
+            sudoku.table[0] = sudoku.table[rowBig * 3 + firstRowToSwap];
+            sudoku.table[rowBig * 3 + firstRowToSwap] = sudoku.table[rowBig * 3 + secondRowToSwap];
+            sudoku.table[rowBig * 3 + secondRowToSwap] = sudoku.table[0];
             sudoku.table.RemoveAt(0);
         }
 
@@ -99,7 +100,7 @@ namespace Sudoku
             int firstRowToSwap;
             int secondRowToSwap;
 
-            RandomGenerator(rnd, 3, out firstRowToSwap, out secondRowToSwap);
+            RandomGenerator(rnd,  out firstRowToSwap, out secondRowToSwap);
             sudoku.table.InsertRange(0, new List<List<int>> { new List<int>(), new List<int>(), new List<int>() });
             for (int i = 0; i < 3; i++)
             {
@@ -113,7 +114,7 @@ namespace Sudoku
         {
             int firstColToSwap;
             int secondColToSwap;
-            RandomGenerator(rnd, 3, out firstColToSwap, out secondColToSwap);
+            RandomGenerator(rnd,  out firstColToSwap, out secondColToSwap);
             foreach(var row in sudoku.table)
             {
                 row.InsertRange(0, new List<int> { 0, 0, 0 });
@@ -131,13 +132,14 @@ namespace Sudoku
         {
             int firstRowToSwap;
             int secondRowToSwap;
-            RandomGenerator(rnd, 9, out firstRowToSwap, out secondRowToSwap);
+            int columnBig = RandomGenerator(rnd, out firstRowToSwap, out secondRowToSwap);
+
             foreach (var row in sudoku.table)
             {
                 row.Insert(0, 0);
-                row[0] = row[firstRowToSwap];
-                row[firstRowToSwap] = row[secondRowToSwap];
-                row[secondRowToSwap] = row[0];
+                row[0] = row[columnBig*3 + firstRowToSwap];
+                row[columnBig * 3 + firstRowToSwap] = row[columnBig * 3 + secondRowToSwap];
+                row[columnBig * 3 + secondRowToSwap] = row[0];
                 row.RemoveAt(0);
             }
         }
@@ -146,7 +148,9 @@ namespace Sudoku
     {
         static void Main(string[] args)
         {
-            Switcher initializer = new Switcher(6);
+            Switcher initializer = new Switcher(16);
+            initializer.Sudoku.Show();
+            Console.WriteLine("\n");
             initializer.Swap();
             initializer.Sudoku.Show();
 
